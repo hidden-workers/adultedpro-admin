@@ -20,7 +20,7 @@ import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import ViewJobModal from '../../components/Modals/ViewJobModal';
 import BulkUploadModal from '../../components/Modals/Popups/BulkUploadModal';
-import AnnounceJobModal from '../../components/Modals/AnnounceJobModal';
+// import AnnounceJobModal from '../../components/Modals/AnnounceJobModal';
 import parseDate from '../../utils/datetime';
 import CLoader from '../../common/Loader';
 
@@ -95,7 +95,7 @@ const Jobs: React.FC = () => {
   const [allJobsWithApplications, setAllJobsWithApplications] = useState([]); 
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
-  const [openAnnounceModal, setOpenAnnounceModal] = useState(false);
+  // const [openAnnounceModal, setOpenAnnounceModal] = useState(false);
   // const [activeJobsCount, setActiveJobsCount] = useState(0); 
   const [isApplicationsModalOpen, setIsApplicationsModalOpen] =
     useState<boolean>(false);
