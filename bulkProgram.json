@@ -1,0 +1,202 @@
+[
+    {
+        "Category": "Wages",
+        "Subcategory": "25th Percentile Hourly Wage",
+        "Details": "$17.75/hour"
+    },
+    {
+        "Category": "Wages",
+        "Subcategory": "Median Hourly Wage",
+        "Details": "$18.46/hour"
+    },
+    {
+        "Category": "Wages",
+        "Subcategory": "75th Percentile Hourly Wage",
+        "Details": "$21.25/hour"
+    },
+    {
+        "Category": "Wages",
+        "Subcategory": "90th Percentile Hourly Wage",
+        "Details": "$22.90/hour"
+    },
+    {
+        "Category": "Top Employers",
+        "Subcategory": "Employer 1",
+        "Details": "Sutter Health"
+    },
+    {
+        "Category": "Top Employers",
+        "Subcategory": "Employer 2",
+        "Details": "Encompass Health"
+    },
+    {
+        "Category": "Top Employers",
+        "Subcategory": "Employer 3",
+        "Details": "Healthcare Employment Network"
+    },
+    {
+        "Category": "Supply & Demand Analysis",
+        "Subcategory": "NCV/NML Subregion Demand",
+        "Details": "756 annual openings"
+    },
+    {
+        "Category": "Supply & Demand Analysis",
+        "Subcategory": "NCV/NML Subregion Supply",
+        "Details": "44 degrees awarded"
+    },
+    {
+        "Category": "Supply & Demand Analysis",
+        "Subcategory": "NCV/NML Subregion Undersupply",
+        "Details": "712 workers"
+    },
+    {
+        "Category": "Supply & Demand Analysis",
+        "Subcategory": "CVML Region Demand",
+        "Details": "1,853 annual openings"
+    },
+    {
+        "Category": "Supply & Demand Analysis",
+        "Subcategory": "CVML Region Supply",
+        "Details": "252 degrees awarded"
+    },
+    {
+        "Category": "Supply & Demand Analysis",
+        "Subcategory": "CVML Region Undersupply",
+        "Details": "1,601 workers"
+    },
+    {
+        "Category": "Projected Employment Growth",
+        "Subcategory": "2022 Employment",
+        "Details": "4,423 jobs"
+    },
+    {
+        "Category": "Projected Employment Growth",
+        "Subcategory": "Projected Employment (2027)",
+        "Details": "4,898 jobs"
+    },
+    {
+        "Category": "Projected Employment Growth",
+        "Subcategory": "5-Year Change",
+        "Details": "Increase of 475 jobs (11%)"
+    },
+    {
+        "Category": "Projected Employment Growth",
+        "Subcategory": "Annual Openings",
+        "Details": "756 jobs"
+    },
+    {
+        "Category": "Market Salaries",
+        "Subcategory": "$30,000 - $34,999",
+        "Details": "17 postings"
+    },
+    {
+        "Category": "Market Salaries",
+        "Subcategory": "$35,000 - $39,999",
+        "Details": "109 postings"
+    },
+    {
+        "Category": "Market Salaries",
+        "Subcategory": "$40,000 - $44,999",
+        "Details": "71 postings"
+    },
+    {
+        "Category": "Market Salaries",
+        "Subcategory": "$45,000 - $49,999",
+        "Details": "80 postings"
+    },
+    {
+        "Category": "Market Salaries",
+        "Subcategory": "$50,000 - $54,999",
+        "Details": "39 postings"
+    },
+    {
+        "Category": "Market Salaries",
+        "Subcategory": "$55,000 - $59,999",
+        "Details": "30 postings"
+    },
+    {
+        "Category": "Market Salaries",
+        "Subcategory": "$60,000 - $64,999",
+        "Details": "11 postings"
+    },
+    {
+        "Category": "Market Salaries",
+        "Subcategory": "$65,000 - $69,999",
+        "Details": "6 postings"
+    },
+    {
+        "Category": "Market Salaries",
+        "Subcategory": "$70,000+",
+        "Details": "56 postings"
+    },
+    {
+        "Category": "Educational Level in Job Postings",
+        "Subcategory": "High School or GED",
+        "Details": 0.73
+    },
+    {
+        "Category": "Educational Level in Job Postings",
+        "Subcategory": "Associate Degree",
+        "Details": 0.19
+    },
+    {
+        "Category": "Educational Level in Job Postings",
+        "Subcategory": "Bachelor's Degree",
+        "Details": 0.07
+    },
+    {
+        "Category": "Educational Level in Job Postings",
+        "Subcategory": "Master's Degree or Higher",
+        "Details": 0.01
+    },
+    {
+        "Category": "Skills in Demand",
+        "Subcategory": "Baseline Skills",
+        "Details": "Communication, Prioritization, Organizational Skills, Cooperation, Management"
+    },
+    {
+        "Category": "Skills in Demand",
+        "Subcategory": "Specialized Skills",
+        "Details": "Nursing, Personal Care, Vital Signs, Nursing Care, Medical Terminology"
+    },
+    {
+        "Category": "Skills in Demand",
+        "Subcategory": "Software Skills",
+        "Details": "Microsoft Excel, Microsoft Outlook, Microsoft Office, Epic EMR, Microsoft Word"
+    },
+    {
+        "Category": "Employment Statistics",
+        "Subcategory": "Current Employment (2022)",
+        "Details": "4,423 jobs"
+    },
+    {
+        "Category": "Employment Statistics",
+        "Subcategory": "Projected Employment (2027)",
+        "Details": "4,898 jobs"
+    },
+    {
+        "Category": "Employment Statistics",
+        "Subcategory": "Annual Openings",
+        "Details": "756 jobs"
+    },
+    {
+        "Category": "Employment Statistics",
+        "Subcategory": "Growth Rate",
+        "Details": "11% over 5 years"
+    },
+    {
+        "Category": "Training Requirements",
+        "Subcategory": "Work Experience Requirement",
+        "Details": "None"
+    },
+    {
+        "Category": "Training Requirements",
+        "Subcategory": "On-The-Job Training",
+        "Details": "None required for entry-level"
+    },
+    {
+        "Category": "Top Job Titles",
+        "Subcategory": "Common Job Titles",
+        "Details": "Certified Nursing Assistants, Medication Technicians, Nursing Assistants, Medication Aides, Monitor Technicians, Certified Nurse Assistants, Qualified Medication Aides, Telemetry Technicians, Restorative Nurses, Medical Surgical Nursing Assistants"
+    }
+]

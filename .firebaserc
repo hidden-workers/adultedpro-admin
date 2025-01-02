@@ -1,0 +1,33 @@
+{
+  "projects": {
+    "default": "adultedpro-dev",
+    "prod": "just-easy-jobs-50739",
+    "dev": "adultedpro-dev"
+  },
+  "targets": {
+    "just-easy-jobs-50739": {
+      "hosting": {
+        "app-adultedpro-target": [
+          "app-adultedpro"
+        ],
+        "app-goevolo-target": [
+          "app-goevolo"
+        ]
+      }
+    },
+    "adultedpro-dev": {
+      "hosting": {
+        "app-adultedpro-dev-target": [
+          "app-adultedpro-dev"
+        ],
+        "dev-app-adultedpro-target": [
+          "dev-app-adultedpro"
+        ],
+        "dev-app-goevolo-target": [
+          "dev-app-goevolo"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
