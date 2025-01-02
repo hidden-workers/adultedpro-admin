@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 import userReducer from './userSlice';
 import authReducer from './authSlice';
-import chatReducer from './chatSlice';
 import employerReducer from './employersSlice';
 import jobReducer from './jobSlice';
 import userApplicationsReducer from './userApplicationsSlice';
@@ -12,12 +11,13 @@ import classSlice from './classSlice';
 import sessionSlice from './sessionSlice';
 import todoSlice from './todoSlice';
 import programSlice from './programSlice';
+// import chatReducer from './chatSlice';
 
 const rootReducer = combineReducers({
   user: userReducer,
   employer: employerReducer,
   auth: authReducer,
-  chat: chatReducer,
+  // chat: chatReducer,
   userApplication: userApplicationsReducer,
   job: jobReducer,
   event: eventReducer,

@@ -46,23 +46,23 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
-  const { chats } = useSelector((state: RootState) => state.chat);
+  // const { chats } = useSelector((state: RootState) => state.chat);
   const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
   const sidebarExpanded =
     storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true';
   const isInTestMode = localStorage.getItem('isTestMode');
-  const totalUnreadCount = useSelector(
-    (state: RootState) => state.chat.totalUnreadCount,
-  );
-  const studentEmployerChatModal = useSelector(
-    (state: RootState) => state.chat.studentEmployerChatModal,
-  );
+  // const totalUnreadCount = useSelector(
+  //   (state: RootState) => state.chat.totalUnreadCount,
+  // );
+  // const studentEmployerChatModal = useSelector(
+  //   (state: RootState) => state.chat.studentEmployerChatModal,
+  // );
   ////////////////////////////////////////////////// USE EFFECTS //////////////////////////////////////////////////////////
-  useEffect(() => {
-    if (authUser?.id && chats.length > 0 && !studentEmployerChatModal) {
-      dispatch<any>(fetchUnreadCounts(authUser.id));
-    }
-  }, [dispatch, authUser?.id, chats]);
+  // useEffect(() => {
+  //   if (authUser?.id && chats.length > 0 && !studentEmployerChatModal) {
+  //     dispatch<any>(fetchUnreadCounts(authUser.id));
+  //   }
+  // }, [dispatch, authUser?.id, chats]);
 
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -220,14 +220,19 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           className={`flex items-center justify-between ${isCollapsed ? 'hidden' : ''}`}
                         >
                           <span className="ml-2">Chats</span>
+                        </div> 
+                      </NavLink>
+                    </li>
+                    {/* <div
+                          className={`flex items-center justify-between ${isCollapsed ? 'hidden' : ''}`}
+                        >
+                          <span className="ml-2">Chats</span>
                           {totalUnreadCount > 0 && (
                             <span className="flex items-center justify-center ml-3 w-5 h-5 bg-white text-black text-sm font-semibold rounded-full">
                               {totalUnreadCount}
                             </span>
                           )}
-                        </div>
-                      </NavLink>
-                    </li>
+                        </div> */}
 
                     {/* Employer Candidates */}
                     <li>

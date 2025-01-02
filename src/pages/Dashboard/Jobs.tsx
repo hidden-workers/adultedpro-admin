@@ -20,10 +20,10 @@ import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import ViewJobModal from '../../components/Modals/ViewJobModal';
 import BulkUploadModal from '../../components/Modals/Popups/BulkUploadModal';
-import AnnounceJobModal from '../../components/Modals/AnnounceJobModal';
+// import AnnounceJobModal from '../../components/Modals/AnnounceJobModal';
 import parseDate from '../../utils/datetime';
 import CLoader from '../../common/Loader';
-
+import { truncate } from '../../utils/functions';
 
 const Jobs: React.FC = () => {
   //////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////
@@ -38,10 +38,7 @@ const Jobs: React.FC = () => {
   const { userApplications } = useSelector(
     (state: RootState) => state.userApplication,
   );
-  const { user } = useSelector((state: RootState) => state.user);
-  const authUser = localStorage.getItem('auth')
-    ? JSON.parse(localStorage.getItem('auth'))
-    : null;
+ 
   const initialJobData: Job = {
     title: '',
     employerId: '',
@@ -98,7 +95,7 @@ const Jobs: React.FC = () => {
   const [allJobsWithApplications, setAllJobsWithApplications] = useState([]); 
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
-  const [openAnnounceModal, setOpenAnnounceModal] = useState(false);
+  // const [openAnnounceModal, setOpenAnnounceModal] = useState(false);
   // const [activeJobsCount, setActiveJobsCount] = useState(0); 
   const [isApplicationsModalOpen, setIsApplicationsModalOpen] =
     useState<boolean>(false);
@@ -164,25 +161,14 @@ const Jobs: React.FC = () => {
       });
       setSortedJobs(sorted);
     }
-  }, [jobsWithApplications]);
+  }, [jobsWithApplications,dateOrder]);
   
 
   //////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////
-  const truncate = (text: string | undefined, maxLength: number): string => {
-    if (!text) {
-      return '';
-    }
-    // Trim spaces from the start of the text
-    const trimmedText = text.trimStart();
-    if (trimmedText.length > maxLength) {
-      return trimmedText.slice(0, maxLength) + '...';
-    }
-    return trimmedText;
-};
+  
 
   
   const onOpenUpdateForm = (job: Job) => {
-    console.log('job update form opening: ', job)
     setSearchValue('');
     setInitialData({
       ...job,
@@ -308,7 +294,6 @@ const Jobs: React.FC = () => {
     selection: { startDate: Date; endDate: Date } | null,
   ) => {
     let jobsToFilter = allJobsWithApplications;
-    console.log('jobs to filter',jobsToFilter)
     if (searchValue.trim().length > 0) {
       jobsToFilter = allJobsWithApplications.filter(
         (j: Job) =>
@@ -388,11 +373,11 @@ const Jobs: React.FC = () => {
   return (
     <DefaultLayout>
       <ViewJobModal job={selectedJob} />
-      <AnnounceJobModal
+      {/* <AnnounceJobModal
         open={openAnnounceModal}
         setOpen={setOpenAnnounceModal}
         job={selectedJob}
-      />
+      /> */}
 
       <Breadcrumb pageName="Job Central" />
       
