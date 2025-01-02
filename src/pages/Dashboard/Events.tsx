@@ -477,7 +477,7 @@ const Events: React.FC = () => {
           </div>
 
           {/* Invited */}
-          {page == 'Employer' && (
+          {/* {page == 'Employer' && (
             <>
               <div
                 onClick={() => setSelectedFilter('invited')}
@@ -500,10 +500,10 @@ const Events: React.FC = () => {
                 </h3>
               </div>
             </>
-          )}
+          )} */}
 
           {/* Incoming Requests */}
-          {page == 'Institution' && (
+          {/* {page == 'Institution' && (
             <div
               onClick={() => setSelectedFilter('requestedByEmployers')}
               className={`${selectedFilter == 'requestedByEmployers' ? 'bg-gray scale-105 shadow-xl ' : 'bg-white scale-100'} col-span-1 flex cursor-pointer flex-row items-center justify-center gap-1 rounded-md border border-yellow-500  text-yellow-500 shadow-default transition-all hover:scale-105 dark:border-strokedark dark:bg-boxdark md:p-2 p-2  `}
@@ -519,7 +519,7 @@ const Events: React.FC = () => {
                 }
               </h3>
             </div>
-          )}
+          )} */}
 
           {/* School Events */}
           {/* <div
@@ -617,10 +617,9 @@ const Events: React.FC = () => {
                     <Loader />
                   </td>
                 </tr>
-              ) : filteredEvents[selectedFilter]?.length === 0 &&
-                filteredBulkEvents.length === 0 ? (
+              ) : filteredEvents[selectedFilter]?.length === 0  ? (
                 <tr>
-                  <td  className="text-center text-3xl font-semibold">
+                  <td>
                     No Events
                   </td>
                 </tr>
