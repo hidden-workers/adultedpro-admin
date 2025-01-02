@@ -38,10 +38,7 @@ const Jobs: React.FC = () => {
   const { userApplications } = useSelector(
     (state: RootState) => state.userApplication,
   );
-  const { user } = useSelector((state: RootState) => state.user);
-  const authUser = localStorage.getItem('auth')
-    ? JSON.parse(localStorage.getItem('auth'))
-    : null;
+ 
   const initialJobData: Job = {
     title: '',
     employerId: '',
@@ -153,6 +150,7 @@ const Jobs: React.FC = () => {
   }, [searchValue]);
 
   useEffect(() => {
+    console.log('date order changed')
     if (jobsWithApplications && jobsWithApplications.length > 0) {
       const sorted = jobsWithApplications.slice().sort((a, b) => {
         const dateA = parseDate(a.dateCreated);
@@ -164,7 +162,7 @@ const Jobs: React.FC = () => {
       });
       setSortedJobs(sorted);
     }
-  }, [jobsWithApplications]);
+  }, [jobsWithApplications,dateOrder]);
   
 
   //////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////
@@ -182,7 +180,6 @@ const Jobs: React.FC = () => {
 
   
   const onOpenUpdateForm = (job: Job) => {
-    console.log('job update form opening: ', job)
     setSearchValue('');
     setInitialData({
       ...job,
@@ -308,7 +305,6 @@ const Jobs: React.FC = () => {
     selection: { startDate: Date; endDate: Date } | null,
   ) => {
     let jobsToFilter = allJobsWithApplications;
-    console.log('jobs to filter',jobsToFilter)
     if (searchValue.trim().length > 0) {
       jobsToFilter = allJobsWithApplications.filter(
         (j: Job) =>
@@ -388,11 +384,11 @@ const Jobs: React.FC = () => {
   return (
     <DefaultLayout>
       <ViewJobModal job={selectedJob} />
-      <AnnounceJobModal
+      {/* <AnnounceJobModal
         open={openAnnounceModal}
         setOpen={setOpenAnnounceModal}
         job={selectedJob}
-      />
+      /> */}
 
       <Breadcrumb pageName="Job Central" />
       
