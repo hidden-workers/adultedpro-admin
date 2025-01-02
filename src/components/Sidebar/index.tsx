@@ -216,7 +216,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 }`}
                       >
                         <MessageSquareX size={20} strokeWidth={1} />
-                        
+                        <div
+                          className={`flex items-center justify-between ${isCollapsed ? 'hidden' : ''}`}
+                        >
+                          <span className="ml-2">Chats</span>
+                        </div> 
                       </NavLink>
                     </li>
                     {/* <div
