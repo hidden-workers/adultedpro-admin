@@ -14,6 +14,17 @@ import { todoActions } from '../store/reducers/todoSlice';
 import { Timestamp } from 'firebase/firestore';
 import { PusherClient } from '../methods/pusher';
 
+export const truncate = (text: string | undefined, maxLength: number): string => {
+  if (!text) {
+    return '';
+  }
+  // Trim spaces from the start of the text
+  const trimmedText = text.trimStart();
+  if (trimmedText.length > maxLength) {
+    return trimmedText.slice(0, maxLength) + '...';
+  }
+  return trimmedText;
+};
 export const formatChatTimestamp = (timestamp) => {
   if (!timestamp) return { date: 'Invalid date', time: '' };
 

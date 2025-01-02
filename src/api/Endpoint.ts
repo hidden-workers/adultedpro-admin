@@ -235,6 +235,11 @@ export const getJoinedEventsByEmployerUrl = (
     `/event/joined-events-by-employer?employerId=${employerId}&limit=${limit}&page=${page}`,
   );
 };
+
+export const getAllEventsUrl = (limit:number) => {
+  return encodeURI(`/event/getAll?limit=${limit}`);
+};
+
 export const getInstituteEmployersUrl = () => {
   return encodeURI(`/institute/institute-employers`);
 };
@@ -405,3 +410,5 @@ export const updateChatUrl = (id: string) => {
 export const getPusherAuthorizationUrl = () => {
   return encodeURI(`/common/pusher-auth`);
 };
+
+

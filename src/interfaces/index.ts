@@ -415,6 +415,7 @@ export interface Event {
   dateCreated: any;
   dateUpdated: any;
   createrEmail: string;
+  createrName?:string,
   employerId?: string;
   partnerId?: string;
   createrRole: string;
@@ -466,7 +467,6 @@ export interface Event {
   AVEquipmentNeeds?: string;
   cateringPreferences?: string;
   parkingArrangements?: string;
-
   isTest?: boolean;
 }
 

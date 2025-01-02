@@ -26,6 +26,7 @@ import {
   getJoinedEventsByEmployerUrl,
   getEventParticipantsUrl,
   addEventParticipantsUrl,
+  getAllEventsUrl
 } from '../../api/Endpoint';
 
 import { removeUndefinedFields } from '../../utils/functions';
@@ -49,6 +50,16 @@ export const fetchEventsByOrganizerId = createAsyncThunk(
     const url = getEventByOrganizerUrl(organizerType, organizerId);
     const response = await axiosInstance.get(url);
     return response.data;
+  },
+);
+
+export const fetchAllEvents = createAsyncThunk(
+  'events/  fetchAllEvents',
+  async () => {
+    const url = getAllEventsUrl(100000);
+    const response = await axiosInstance.get(url);
+    console.log('api response',response.data.events)
+    return response.data.events;
   },
 );
 export const fetchEventsParticipants = createAsyncThunk(
@@ -571,6 +582,7 @@ interface Participant {
 interface EventState {
   event: Event | undefined;
   events: Event[];
+  allEvents: Event [];
   joinedEvents: Event[];
   schoolEvents: Event[]; // All School Events - For Employer page
   invitedEvents: Event[]; // For employer
@@ -591,6 +603,7 @@ interface EventState {
 const initialState: EventState = {
   event: undefined,
   events: [],
+  allEvents: [],
   schoolEvents: [],
   joinedEvents: [],
   requestedEventsByEmployers: [],
@@ -638,6 +651,14 @@ const eventSlice = createSlice({
         state.isLoading = false;
         const sortedEvents = sortEvents(action.payload.events);
         state.events = sortedEvents.map((event: any) =>
+          transformEventDataToFirebase(event),
+        );
+        // state.events = sortEvents(action.payload.events);
+      })
+      .addCase(fetchAllEvents.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const sortedEvents = sortEvents(action.payload);
+        state.allEvents = sortedEvents.map((event: any) =>
           transformEventDataToFirebase(event),
         );
         // state.events = sortEvents(action.payload.events);

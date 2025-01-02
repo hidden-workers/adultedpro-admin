@@ -302,6 +302,18 @@ const ViewEventModal = ({
               <EventElement title="Title" value={selectedEvent?.title} />
               <EventElement title="Event Type" value={selectedEvent?.type} />
               <EventElement
+                title="Start Date"
+                value={
+                  extractDateTimeFromTimestamp(selectedEvent?.eventFrom).date
+                }
+              />
+              <EventElement
+                title="End Date"
+                value={
+                  extractDateTimeFromTimestamp(selectedEvent?.eventTo)?.date
+                }
+              />
+              <EventElement
                 title="Description"
                 value={selectedEvent?.description}
               />
@@ -333,30 +345,109 @@ const ViewEventModal = ({
                 value={selectedEvent?.contactEmail}
               />
               <EventElement
-                title="Contact Name"
-                value={selectedEvent?.contactName}
+                title="Creater Name"
+                value={selectedEvent?.createrName}
               />
               <EventElement
-                title="Contact Phone"
-                value={selectedEvent?.contactPhone}
+                title="Creater Email"
+                value={selectedEvent?.createrEmail}
               />
               <EventElement
-                title="Contact Title"
-                value={selectedEvent?.contactTitle}
+                title="Creater Role"
+                value={selectedEvent?.createrRole}
               />
               <EventElement
-                title="Start Date"
-                value={
-                  extractDateTimeFromTimestamp(selectedEvent?.eventFrom).date
-                }
+                title="Approved By Admin"
+                value={selectedEvent?.approvedByAdmin ? 'Yes' : 'No'}
               />
               <EventElement
-                title="End Date"
-                value={
-                  extractDateTimeFromTimestamp(selectedEvent?.eventTo)?.date
-                }
+                title="Rejected By Amdin"
+                value={selectedEvent?.rejectedByAdmin ? 'Yes' :'No'}
               />
               <EventElement
+                title="Dress Code"
+                value={selectedEvent?.dressCode}
+              />
+              <EventElement
+                title="Organized By"
+                value={selectedEvent?.partnerId}
+              />
+              <EventElement
+                title="Requested Program"
+                value={selectedEvent?.requestedProgram}
+              />
+              <EventElement
+                title="AV Equipment Needs"
+                value={selectedEvent?.AVEquipmentNeeds}
+              />
+              <EventElement
+                title="RSVP"
+                value={selectedEvent?.RSVP}
+              />
+              <EventElement
+                title="Additional Comments"
+                value={selectedEvent?.additionalComments}
+              />
+              <EventElement
+                title="Agenda"
+                value={selectedEvent?.agenda}
+              />
+              <EventElement
+                title="Carousel Images"
+                value={selectedEvent?.carouselImages?.join(', ')}
+              />
+              <EventElement
+                title="Catering Preferences"
+                value={selectedEvent?.cateringPreferences}
+              />
+              <EventElement
+                title="Emergency Contact No"
+                value={selectedEvent?.emergencyContactPhone}
+              />
+              <EventElement
+                title="Note From Institution"
+                value={selectedEvent?.noteFromInstitution}
+              />
+              <EventElement
+                title="Parking Arragements"
+                value={selectedEvent?.parkingArrangements}
+              />
+              <EventElement
+                title="Preffered Location In School"
+                value={selectedEvent?.preferredLocationInSchool}
+              />
+              <EventElement
+                title="Purpose"
+                value={selectedEvent?.purpose}
+              />
+              <EventElement
+                title="Expected Attendees"
+                value={selectedEvent?.expectedAttendees}
+              />
+              <EventElement
+                title="SetUp Requiremets"
+                value={selectedEvent?.setupRequirements}
+              />
+              <EventElement
+                title="Transportaion Details"
+                value={selectedEvent?.transportationDetails}
+              />
+              <EventElement
+                title="Url"
+                value={selectedEvent?.url}
+              />
+              <EventElement
+                title="Is Test"
+                value={selectedEvent?.isTest ? 'Yes' : 'No'}
+              />
+              <EventElement
+                title="Requested Partner"
+                value={typeof selectedEvent?.requestedPartner === 'object' && selectedEvent?.requestedPartner?.name
+                  ? String(selectedEvent.requestedPartner.name)
+                  : String(selectedEvent?.requestedPartner)}
+              />
+              
+              {/* <EventElement
                 title="Event From"
                 value={
                   extractDateTimeFromTimestamp(selectedEvent?.eventFrom)?.time
@@ -367,8 +458,8 @@ const ViewEventModal = ({
                 value={
                   extractDateTimeFromTimestamp(selectedEvent?.eventTo)?.time
                 }
-              />
-              <EventElement title="Host Name" value={selectedEvent?.hostName} />
+              /> */}
+              {/* <EventElement title="Host Name" value={selectedEvent?.hostName} /> */}
               <EventElement title="Employers" value={employerNames} />
               <EventElement
                 title="Participants"

@@ -23,7 +23,7 @@ import BulkUploadModal from '../../components/Modals/Popups/BulkUploadModal';
 // import AnnounceJobModal from '../../components/Modals/AnnounceJobModal';
 import parseDate from '../../utils/datetime';
 import CLoader from '../../common/Loader';
-
+import { truncate } from '../../utils/functions';
 
 const Jobs: React.FC = () => {
   //////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////
@@ -150,7 +150,6 @@ const Jobs: React.FC = () => {
   }, [searchValue]);
 
   useEffect(() => {
-    console.log('date order changed')
     if (jobsWithApplications && jobsWithApplications.length > 0) {
       const sorted = jobsWithApplications.slice().sort((a, b) => {
         const dateA = parseDate(a.dateCreated);
@@ -166,17 +165,7 @@ const Jobs: React.FC = () => {
   
 
   //////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////
-  const truncate = (text: string | undefined, maxLength: number): string => {
-    if (!text) {
-      return '';
-    }
-    // Trim spaces from the start of the text
-    const trimmedText = text.trimStart();
-    if (trimmedText.length > maxLength) {
-      return trimmedText.slice(0, maxLength) + '...';
-    }
-    return trimmedText;
-};
+  
 
   
   const onOpenUpdateForm = (job: Job) => {

@@ -99,6 +99,7 @@ export const transformEventDataToFirebase = (
   contactName: data?.creater_name,
   createrEmail: data?.creater_email,
   createrRole: data?.creater_role,
+  createrName:data?.creater_name,
   purpose: data?.purpose,
   dateCreated: data?.createdAt,
   dateUpdated: data?.updatedAt,

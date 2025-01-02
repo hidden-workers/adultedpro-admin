@@ -1,30 +1,22 @@
 import 'flatpickr/dist/flatpickr.min.css';
 import React, { useEffect, useMemo, useState } from 'react';
 import DefaultLayout from '../../layout/DefaultLayout.tsx';
-
 import { FaCheck } from 'react-icons/fa';
 import { MdEditCalendar } from 'react-icons/md';
-
 import { RxCross2 } from 'react-icons/rx';
-
 import CreateEvent from '../../components/Modals/CreateEvent.tsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store.ts';
 import {
-  fetchEventsByOrganizerId,
-  fetchEventsByRequestedPartnerId,
-  fetchInvitedEventsForEmployer,
-  fetchJoinedEventsByEmployer,
-  addEventsParticipants,
-  fetchBulkEvents,
+  fetchAllEvents,addEventsParticipants
 } from '../../store/reducers/eventSlice.ts';
 import Calendar from './Calendar.tsx';
 import Loader from '../../common/Loader/index.tsx';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb.tsx';
 import { Eye, Pencil, Search } from 'lucide-react';
-import { Event, EventFile } from '../../interfaces/index.ts';
+import { Event } from '../../interfaces/index.ts';
 import ViewEventModal from '../../components/Modals/ViewEventModal.tsx';
-import ViewBulkEventModal from '../../components/Modals/ViewBulkEventModal.tsx';
+// import ViewBulkEventModal from '../../components/Modals/ViewBulkEventModal.tsx';
 import NoteFromInstitution from '../../components/Modals/NoteFromInstitution.tsx';
 import { fetchEmployersByEmail } from '../../store/reducers/employersSlice.ts';
 import { IconButton, Tooltip } from '@mui/material';
@@ -32,9 +24,11 @@ import { extractDateTimeFromTimestamp } from '../../utils/functions.ts';
 import { useStateContext } from '../../context/useStateContext.tsx';
 import { Timestamp } from 'firebase/firestore';
 import { EventStatus, EventTypes, UserRolesEnum } from '../../utils/enums.ts';
-import UpdateBulkEventModal from '../../components/Modals/UpdateBulkEventModal.tsx';
+// import UpdateBulkEventModal from '../../components/Modals/UpdateBulkEventModal.tsx';
 // import { getDateFromTimestamp } from '../../utils/functions.ts';
 import { parseDate } from '../../utils/datetime';
+import { truncate } from '../../utils/functions.ts';
+
 interface FilteredEvents {
   all: Event[];
   requested: Event[];
@@ -51,10 +45,7 @@ interface FilteredEvents {
 const Events: React.FC = () => {
   ///////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////////
   const {
-    events: fetchedEvents,
-    invitedEvents: fetchedInvitedEvents,
-    joinedEvents: fetchedJoinedEvents,
-    requestedEventsByEmployers: fetchedRequestedEventsByEmployers,
+    allEvents: fetchedAllEvents,
   } = useSelector((state: RootState) => state.event);
   const { user } = useSelector((state: RootState) => state.user);
   const { employer, branches } = useSelector(
@@ -69,7 +60,6 @@ const Events: React.FC = () => {
   }, [user]);
   const dispatch = useDispatch();
   const role = String(localStorage.getItem('Role'));
-
   // requestedTo
   const initialEventData: Event = {
     title: '',
@@ -123,8 +113,7 @@ const Events: React.FC = () => {
     parkingArrangements: '', // optional
     isTest: false,
   };
-  const mongoInstituteId = localStorage.getItem('mongoInstituteId');
-  const mongoUserId = localStorage.getItem('mongoUserId');
+  
   ///////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////////
   const [searchValue, setSearchValue] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -164,60 +153,25 @@ const Events: React.FC = () => {
     EventStatus.Scheduled,
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedBulkEvent, setSelectedBulkEvent] = useState<EventFile | null>(
-    null,
-  );
-  const [updateModalOpen, setUpdateModalOpen] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
+  // const [selectedBulkEvent, setSelectedBulkEvent] = useState<EventFile | null>(
+  //   null,
+  // );
+  // const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  // const [modalOpen, setModalOpen] = useState(false);
   const filteredBulkEvents = bulkEvents.filter(
     (eventFile) => eventFile.instituteName === authUser?.partnerName,
   );
-  const all = filteredEvents?.allPlusJoined.length + filteredBulkEvents.length;
-  const scheduled =
-    filteredEvents?.scheduled?.length + filteredBulkEvents.length;
   ///////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////////
   useEffect(() => {
-    dispatch<any>(fetchBulkEvents());
+    // dispatch<any>(fetchBulkEvents());
+    setIsLoading(true);
+    dispatch<any>(fetchAllEvents()).finally(() => setIsLoading(false));
     dispatch<any>(fetchEmployersByEmail(authUser?.email));
     if (filteredEvents[selectedFilter]?.length > 0) return;
-    setIsLoading(true);
-    dispatch<any>(
-      fetchEventsByOrganizerId({
-        organizerType: page == 'Institution' ? 'institution' : 'branch',
-        organizerId: page == 'Institution' ? mongoInstituteId : mongoUserId,
-      }),
-    ).finally(() => setIsLoading(false));
+    
+   
   }, [authUser?.email]);
-  useEffect(() => {
-    if (page == 'Employer' && branches?.length > 0)
-      dispatch<any>(
-        fetchInvitedEventsForEmployer({
-          employerId: mongoUserId,
-          page: 1,
-          limit: 100000,
-        }),
-      );
-  }, [branches]);
-  useEffect(() => {
-    if (employer)
-      dispatch<any>(
-        fetchJoinedEventsByEmployer({
-          employerId: mongoUserId,
-          page: 1,
-          limit: 100000,
-        }),
-      );
-  }, [employer]);
-  useEffect(() => {
-    if (page == 'Institution')
-      dispatch<any>(
-        fetchEventsByRequestedPartnerId({
-          instituteId: mongoInstituteId,
-          page: 1,
-          limit: 1000000,
-        }),
-      );
-  }, []);
+
   useEffect(() => {
     const filtered = getFilteredEvents();
     setFilteredEvents(filtered);
@@ -227,53 +181,42 @@ const Events: React.FC = () => {
     }
   }, [
     JSON.stringify({
-      fetchedEvents,
-      fetchedInvitedEvents,
-      fetchedRequestedEventsByEmployers,
-      fetchedJoinedEvents,
+      fetchedAllEvents
     }),
   ]);
 
   const getFilteredEvents = (): FilteredEvents => {
-    const all = [...fetchedEvents, ...fetchedRequestedEventsByEmployers];
+    console.log('fetched all events',fetchedAllEvents)
+    const all = [...fetchedAllEvents];
 
     const currentDate = new Date();
-    const upcomingFetchedEvents = fetchedEvents.filter((e) => {
+    const upcomingFetchedEvents = fetchedAllEvents.filter((e) => {
       const eventToDate = parseDate(e.eventTo);
       return eventToDate > currentDate && e.status !== 'Cancelled';
     });
-    const upcomingRequestedByIdEvents =
-      fetchedRequestedEventsByEmployers.filter((e) => {
-        const eventToDate = parseDate(e.eventTo);
-        return eventToDate > currentDate && e.status !== 'Cancelled';
-      });
+    
     const upcomingEvents = [
-      ...upcomingFetchedEvents,
-      ...upcomingRequestedByIdEvents,
+      ...upcomingFetchedEvents
     ];
 
-    const joined = fetchedJoinedEvents;
-    const requested = fetchedEvents.filter((e) => {
+    // const joined = fetchedJoinedEvents;
+    const joined = fetchedAllEvents;
+    const requested = fetchedAllEvents.filter((e) => {
       const eventToDate = parseDate(e.eventTo);
       return eventToDate > currentDate && e.status === EventStatus.Requested;
     });
 
-    const rescheduleFetchedEvents = fetchedEvents.filter((e) => {
+    const rescheduleFetchedEvents = fetchedAllEvents.filter((e) => {
       const eventToDate = parseDate(e.eventTo);
       return e.status === EventStatus.Reschedule && eventToDate > currentDate;
     });
-    const rescheduleFetchedRequestedEventsById =
-      fetchedRequestedEventsByEmployers.filter((e) => {
-        const eventToDate = parseDate(e.eventTo);
-        return e.status === EventStatus.Reschedule && eventToDate > currentDate;
-      });
+    
     const reschedule = [
-      ...rescheduleFetchedEvents,
-      ...rescheduleFetchedRequestedEventsById,
+      ...rescheduleFetchedEvents
     ];
-    const invited = fetchedInvitedEvents;
-
-    const incomingRequestsById = fetchedRequestedEventsByEmployers.filter(
+    // const invited = fetchedInvitedEvents;
+ const invited = fetchedAllEvents;
+    const incomingRequestsById = fetchedAllEvents.filter(
       (e) => {
         const eventToDate = parseDate(e.eventTo);
         return (
@@ -285,36 +228,24 @@ const Events: React.FC = () => {
     );
     const requestedByEmployers = [...incomingRequestsById];
 
-    const cancelledFetchedEvents = fetchedEvents.filter(
+    const cancelledFetchedEvents = fetchedAllEvents.filter(
       (e) =>
-        e.status === EventStatus.Cancelled &&
-        !fetchedRequestedEventsByEmployers.map((e) => e?.id)?.includes(e?.id),
+        e.status === EventStatus.Cancelled 
     );
-    const cancelledRequestedByIdEvents =
-      fetchedRequestedEventsByEmployers.filter(
-        (e) => e.status === EventStatus.Cancelled,
-      );
+   
     const cancelled = [
-      ...cancelledFetchedEvents,
-      ...cancelledRequestedByIdEvents,
+      ...cancelledFetchedEvents
     ];
 
     const approvedRequestedByIdEvents =
-      fetchedRequestedEventsByEmployers.filter((e) => {
+      fetchedAllEvents.filter((e) => {
         const eventToDate = parseDate(e.eventTo);
         return e.status == EventStatus.Scheduled && eventToDate > currentDate;
       });
     const scheduled = [
-      ...approvedRequestedByIdEvents,
-      ...fetchedEvents.filter((e) => {
-        const eventToDate = parseDate(e.eventTo);
-        return e.status === EventStatus.Scheduled && eventToDate > currentDate;
-      }),
+      ...approvedRequestedByIdEvents
     ];
-    const allPlusJoined =
-      role === 'Admin' || role === 'Teacher'
-        ? [...all]
-        : [...all, ...joined, ...invited];
+    const allPlusJoined = [...fetchedAllEvents]
     const filtered: FilteredEvents = {
       all,
       scheduled,
@@ -393,22 +324,22 @@ const Events: React.FC = () => {
       setOpenNoteModal(true);
     }
   };
-  const onOpenViewBulkEventModal = (eventFile: EventFile) => {
-    setSelectedBulkEvent(eventFile);
-    setModalOpen(true);
-  };
-  const handleOpenUpdateBulkEventForm = (eventFile: EventFile) => {
-    setSelectedBulkEvent(eventFile);
-    setUpdateModalOpen(true);
-  };
-  const handleCloseUpdateModal = () => {
-    setUpdateModalOpen(false);
-    setSelectedBulkEvent(null);
-  };
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setSelectedEvent(null);
-  };
+  // const onOpenViewBulkEventModal = (eventFile: EventFile) => {
+  //   setSelectedBulkEvent(eventFile);
+  //   setModalOpen(true);
+  // };
+  // const handleOpenUpdateBulkEventForm = (eventFile: EventFile) => {
+  //   setSelectedBulkEvent(eventFile);
+  //   setUpdateModalOpen(true);
+  // };
+  // const handleCloseUpdateModal = () => {
+  //   setUpdateModalOpen(false);
+  //   setSelectedBulkEvent(null);
+  // };
+  // const handleCloseModal = () => {
+  //   setModalOpen(false);
+  //   setSelectedEvent(null);
+  // };
 
   // For Employer - to accept/reject the event invitation
   const onAcceptRejectInvitedEvent = (event: Event, status: EventStatus) => {
@@ -486,7 +417,7 @@ const Events: React.FC = () => {
           >
             <p className="text-xs text-center font-medium">All Events</p>
             <h3 className="text-xs font-bold text-black dark:text-white">
-              {all}
+              {filteredEvents?.all?.length}
             </h3>
           </div>
 
@@ -516,7 +447,7 @@ const Events: React.FC = () => {
           >
             <p className="text-xs text-center font-medium ">Events Scheduled</p>
             <h3 className="text-xs font-bold text-black dark:text-white">
-              {scheduled}
+              {filteredEvents?.scheduled?.length}
             </h3>
           </div>
 
@@ -633,319 +564,230 @@ const Events: React.FC = () => {
           <CreateEvent event={initialData} setInitialData={setInitialData} />
         </div>
 
-        <div className="grid w-full grid-cols-12 gap-4 md:gap-4">
-          <div className="col-span-12 space-y-4 xl:col-span-12 ">
-            <div className="overflow-hidden rounded-[10px]">
-              <div className="max-w-full overflow-x-auto">
-                <div className="min-w-[1170px]">
-                  {/* table header start */}
-                  <div
-                    style={{
-                      gridTemplateColumns: 'repeat(14, minmax(0, 1fr))',
-                    }}
-                    className="grid bg-[#F9FAFB] px-4 py-4 dark:bg-meta-4 lg:px-7.5 2xl:px-7"
-                  >
-                    <div className="col-span-3">
-                      <h5 className="text-center text-base font-bold text-[#1C2434] dark:text-bodydark">
-                        Title
-                      </h5>
-                    </div>
-                    <div className="col-span-2">
-                      <h5 className="text-center text-base font-bold text-[#1C2434] dark:text-bodydark">
-                        Event Start
-                      </h5>
-                    </div>
-                    <div className="col-span-2">
-                      <h5 className="text-center text-base font-bold text-[#1C2434] dark:text-bodydark">
-                        Event End
-                      </h5>
-                    </div>
-                    <div className="col-span-2">
-                      <h5 className="text-center text-base font-bold text-[#1C2434] dark:text-bodydark">
-                        Type
-                      </h5>
-                    </div>
-                    <div className="col-span-2">
-                      <h5 className="text-center text-base font-bold text-[#1C2434] dark:text-bodydark">
-                        Status
-                      </h5>
-                    </div>
-                    {/* <div className="col-span-2">
-                          <h5 className="text-center font-bold text-[#3c50e0] dark:text-bodydark">
-                            Description
-                          </h5>
-                        </div> */}
-                    <div className="col-span-3">
-                      <h5 className="text-center text-base font-bold text-[#1C2434] dark:text-bodydark">
-                        Actions
-                      </h5>
-                    </div>
-                  </div>
-                  {/* table header end */}
-
-                  {/* table body start */}
-                  <div className="bg-white dark:bg-boxdark">
-                    {isLoading ? (
-                      <Loader />
-                    ) : filteredEvents[selectedFilter]?.length === 0 &&
-                      filteredBulkEvents.length === 0 ? (
-                      <div className="flex h-[17rem] w-full items-center justify-center">
-                        <p className="text-3xl font-semibold">No Events</p>
-                      </div>
-                    ) : (
-                      <>
-                        {/* Display events based on the selected filter */}
-                        {filteredEvents[selectedFilter]?.map(
-                          (event: Event, index: number) => (
-                            <div
-                              key={index}
-                              style={{
-                                gridTemplateColumns:
-                                  'repeat(14, minmax(0, 1fr))',
-                              }}
-                              className="grid border-t border-[#EEEEEE] px-4 py-4 dark:border-strokedark lg:px-7.5 2xl:px-7"
+        <div className="table-container">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Event Start</th>
+                <th>Event End</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+                <th>Description</th>
+                <th>Creater Name</th>
+                <th>Creater Email</th>
+                <th>Creater Role</th>
+                <th>Contact Email</th>
+                <th>Address Line 1</th>
+                <th>Address Line 2</th>
+                <th>Approved By Admin</th>
+                <th>Rejected By Admin</th>
+                <th>Dress Code</th>
+                <th>Organized By</th>
+                <th>Requested Program</th>
+                <th>Zip Code</th>
+                <th>Av Equipment Needs</th>
+                <th>RSVP</th>
+                <th>Additional Comments</th>
+                <th>Agenda</th>
+                <th>Carousel Images</th>
+                <th>Careting Preferences</th>
+                <th>Emergency Contact No.</th>
+                <th>Note From Institution</th>
+                <th>Parking Arrangements</th>
+                <th>Preffered Location</th>
+                <th>Purpose</th>
+                <th>Expected Attendees</th>
+                <th>Setup Requirements</th>
+                <th>Transportation Details</th>
+                <th>Url</th>
+                <th>State</th>
+                <th>Is Test</th>
+                <th>City</th>
+                <th>Event Date</th>
+                <th>Requested Partner</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td >
+                    <Loader />
+                  </td>
+                </tr>
+              ) : filteredEvents[selectedFilter]?.length === 0 &&
+                filteredBulkEvents.length === 0 ? (
+                <tr>
+                  <td  className="text-center text-3xl font-semibold">
+                    No Events
+                  </td>
+                </tr>
+              ) : (
+                filteredEvents[selectedFilter]?.map((event, index) => (
+                  <tr key={index}>
+                    <td>{event?.id}</td>
+                    <td>{event?.title}</td>
+                    <td>
+                      {extractDateTimeFromTimestamp(event?.eventFrom)?.date}
+                    </td>
+                    <td>
+                      {extractDateTimeFromTimestamp(event?.eventTo)?.date}
+                    </td>
+                    <td>{event?.type}</td>
+                    <td
+                      className={`${
+                        event?.status === EventStatus.Scheduled
+                          ? 'text-meta-3'
+                          : event?.status === EventStatus.Requested
+                          ? 'text-meta-8'
+                          : event?.status === EventStatus.Cancelled
+                          ? 'text-meta-1'
+                          : 'text-[#637381]'
+                      }`}
+                    >
+                      {selectedFilter === 'joined' ? 'Joined' : event?.status}
+                    </td>
+                    <td className="actions">
+                      <div className="flex justify-center gap-1">
+                        <Tooltip title="View" placement="top">
+                          <IconButton onClick={() => onOpenViewModal(event)}>
+                            <Eye className="text-gray-icon" />
+                          </IconButton>
+                        </Tooltip>
+                        {selectedFilter === 'invited' && (
+                          <>
+                            <button
+                              disabled={loading.scheduled}
+                              onClick={() =>
+                                onAcceptRejectInvitedEvent(
+                                  event,
+                                  EventStatus.Scheduled,
+                                )
+                              }
+                                className="rounded-md bg-black text-sm px-2 py-1 text-whiten hover:bg-black/75 disabled:bg-black/50"
                             >
-                              {/* Event Content Here */}
-                              <div className="col-span-3 flex items-center justify-center">
-                                <p className="text-center text-sm text-[#637381] dark:text-bodydark">
-                                  {event?.title}
-                                </p>
-                              </div>
-                              <div className="col-span-2 flex items-center justify-center">
-                                <p className="text-center text-sm text-[#637381] dark:text-bodydark">
-                                  {
-                                    extractDateTimeFromTimestamp(
-                                      event?.eventFrom,
-                                    ).date
-                                  }
-                                </p>
-                              </div>
-                              <div className="col-span-2 flex items-center justify-center">
-                                <p className="text-center text-sm text-[#637381] dark:text-bodydark">
-                                  {
-                                    extractDateTimeFromTimestamp(event?.eventTo)
-                                      .date
-                                  }
-                                </p>
-                              </div>
-                              <div className="col-span-2 flex items-center justify-center">
-                                <p className="text-center text-sm text-[#637381] dark:text-bodydark">
-                                  {event?.type}
-                                </p>
-                              </div>
-                              <div className="col-span-2 flex items-center justify-center">
-                                <p
-                                  className={`text-center text-sm ${
-                                    event?.status === EventStatus.Scheduled
-                                      ? 'text-meta-3'
-                                      : event?.status === EventStatus.Requested
-                                        ? 'text-meta-8'
-                                        : event?.status ===
-                                            EventStatus.Cancelled
-                                          ? 'text-meta-1'
-                                          : 'text-[#637381]'
-                                  } dark:text-bodydark`}
-                                >
-                                  {selectedFilter === 'joined'
-                                    ? 'Joined'
-                                    : event?.status}
-                                </p>
-                              </div>
-                              <div className="col-span-3">
-                                <div className="flex items-center text-sm justify-center gap-1">
-                                  <Tooltip title="View" placement="top">
-                                    <IconButton
-                                      onClick={() => onOpenViewModal(event)}
-                                    >
-                                      <Eye className="text-gray-icon" />
-                                    </IconButton>
-                                  </Tooltip>
-                                  {/* Conditional Buttons */}
-                                  {selectedFilter === 'invited' && (
-                                    <>
-                                      <button
-                                        disabled={loading.scheduled}
-                                        onClick={() =>
-                                          onAcceptRejectInvitedEvent(
-                                            event,
-                                            EventStatus.Scheduled,
-                                          )
-                                        }
-                                        className="rounded-md bg-black text-sm px-2 py-1 text-whiten hover:bg-black/75 disabled:bg-black/50"
-                                      >
-                                        Approve
-                                      </button>
-                                      <button
-                                        disabled={loading.cancelled}
-                                        onClick={() =>
-                                          onAcceptRejectInvitedEvent(
-                                            event,
-                                            EventStatus.Cancelled,
-                                          )
-                                        }
-                                        className="rounded-md bg-black text-sm px-2 py-1 text-whiten hover:bg-black/75 disabled:bg-black/50"
-                                      >
-                                        Reject
-                                      </button>
-                                    </>
-                                  )}
-                                  {selectedFilter === 'requestedByEmployers' &&
-                                    role === UserRolesEnum.SchoolAdmin && (
-                                      <>
-                                        <button
-                                          disabled={loading.scheduled}
-                                          onClick={() =>
-                                            onApproveRejectReschedule(
-                                              {
-                                                ...event,
-                                                approvedByAdmin: true,
-                                              },
-                                              EventStatus.Scheduled,
-                                            )
-                                          }
-                                          className="rounded-md bg-black text-sm px-2 py-1 text-whiten hover:bg-black/75 disabled:bg-black/50"
-                                        >
-                                          <FaCheck />
-                                        </button>
-                                        <button
-                                          disabled={loading.cancelled}
-                                          onClick={() =>
-                                            onApproveRejectReschedule(
-                                              event,
-                                              EventStatus.Cancelled,
-                                            )
-                                          }
-                                          className="rounded-md bg-black text-sm px-2 py-1 text-whiten hover:bg-black/75 disabled:bg-black/50"
-                                        >
-                                          <RxCross2 />
-                                        </button>
-                                        <button
-                                          disabled={loading.reschedule}
-                                          onClick={() =>
-                                            onApproveRejectReschedule(
-                                              event,
-                                              EventStatus.Reschedule,
-                                            )
-                                          }
-                                          className="rounded-md bg-black text-sm px-2 py-1 text-whiten hover:bg-black/75 disabled:bg-black/50"
-                                        >
-                                          <MdEditCalendar />
-                                        </button>
-                                      </>
-                                    )}
-                                  {selectedFilter !== 'requestedByEmployers' &&
-                                    selectedFilter !== 'invited' &&
-                                    selectedFilter !== 'joined' && (
-                                      <Tooltip title="Edit" placement="top">
-                                        <IconButton
-                                          onClick={() =>
-                                            onOpenUpdateForm(event)
-                                          }
-                                        >
-                                          <Pencil className="text-gray-icon" />
-                                        </IconButton>
-                                      </Tooltip>
-                                    )}
-                                </div>
-                              </div>
-                            </div>
-                          ),
+                              Approve
+                            </button>
+                            <button
+                              disabled={loading.cancelled}
+                              onClick={() =>
+                                onAcceptRejectInvitedEvent(
+                                  event,
+                                  EventStatus.Cancelled,
+                                )
+                              }
+                                className="rounded-md bg-black text-sm px-2 py-1 text-whiten hover:bg-black/75 disabled:bg-black/50"
+                            >
+                              Reject
+                            </button>
+                          </>
                         )}
-
-                        {/* display bulk events */}
-                        {(selectedFilter === 'allPlusJoined' ||
-                          selectedFilter === 'scheduled') &&
-                          filteredBulkEvents.length > 0 && (
-                            <>
-                              {filteredBulkEvents.map(
-                                (eventFile: EventFile, index: number) => (
-                                  <div
-                                    key={index}
-                                    style={{
-                                      gridTemplateColumns:
-                                        'repeat(14, minmax(0, 1fr))',
-                                    }}
-                                    className="grid border-t border-[#EEEEEE] px-4 py-4 dark:border-strokedark lg:px-7.5 2xl:px-7"
-                                  >
-                                    {/* Bulk Event Content Here */}
-                                    <div className="col-span-3 flex items-center justify-center">
-                                      <p className="text-center text-sm text-[#637381] dark:text-bodydark">
-                                        {eventFile?.program}{' '}
-                                        {/* Adjust as needed */}
-                                      </p>
-                                    </div>
-                                    <div className="col-span-2 flex items-center justify-center">
-                                      <p className="text-center text-sm text-[#637381] dark:text-bodydark">
-                                        {eventFile.startDate}
-                                      </p>
-                                    </div>
-                                    <div className="col-span-2 flex items-center justify-center">
-                                      <p className="text-center text-sm text-[#637381] dark:text-bodydark">
-                                        {eventFile.endDate}
-                                      </p>
-                                    </div>
-                                    <div className="col-span-2 flex items-center justify-center">
-                                      <p className="text-center text-sm text-[#637381] dark:text-bodydark">
-                                        {eventFile.eventType}
-                                      </p>
-                                    </div>
-                                    <div className="col-span-2 flex items-center justify-center">
-                                      <p className="text-center text-sm text-meta-3 dark:text-bodydark">
-                                        {eventFile.status}
-                                      </p>
-                                    </div>
-                                    <div className="col-span-3">
-                                      <div className="flex items-center text-sm justify-center gap-1">
-                                        <Tooltip title="View" placement="top">
-                                          <IconButton
-                                            onClick={() =>
-                                              onOpenViewBulkEventModal(
-                                                eventFile,
-                                              )
-                                            }
-                                          >
-                                            <Eye className="text-gray-icon" />
-                                          </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title="Edit" placement="top">
-                                          <IconButton
-                                            onClick={() =>
-                                              handleOpenUpdateBulkEventForm(
-                                                eventFile,
-                                              )
-                                            }
-                                          >
-                                            <Pencil className="text-gray-icon" />
-                                          </IconButton>
-                                        </Tooltip>
-                                      </div>
-                                    </div>
-                                    <ViewBulkEventModal
-                                      open={modalOpen}
-                                      onClose={handleCloseModal}
-                                      bulkevent={selectedBulkEvent}
-                                    />
-                                    <UpdateBulkEventModal
-                                      open={updateModalOpen}
-                                      onClose={handleCloseUpdateModal}
-                                      bulkEvent={selectedBulkEvent}
-                                    />
-                                  </div>
-                                ),
-                              )}
-                            </>
+                        {selectedFilter === 'requestedByEmployers' &&
+                          role === UserRolesEnum.SchoolAdmin && (
+                          <>
+                            <button
+                              disabled={loading.scheduled}
+                              onClick={() =>
+                                onApproveRejectReschedule(
+                                  {
+                                    ...event,
+                                    approvedByAdmin: true,
+                                  },
+                                  EventStatus.Scheduled,
+                                )
+                              }
+                                className="rounded-md bg-black text-sm px-2 py-1 text-whiten hover:bg-black/75 disabled:bg-black/50"
+                            >
+                              <FaCheck />
+                            </button>
+                            <button
+                              disabled={loading.cancelled}
+                              onClick={() =>
+                                onApproveRejectReschedule(
+                                  event,
+                                  EventStatus.Cancelled,
+                              )
+                              }
+                                className="rounded-md bg-black text-sm px-2 py-1 text-whiten hover:bg-black/75 disabled:bg-black/50"
+                            >
+                              <RxCross2 />
+                            </button>
+                            <button
+                              disabled={loading.reschedule}
+                              onClick={() =>
+                                onApproveRejectReschedule(
+                                  event,
+                                  EventStatus.Reschedule,
+                                )
+                              }
+                                className="rounded-md bg-black text-sm px-2 py-1 text-whiten hover:bg-black/75 disabled:bg-black/50"
+                            >
+                              <MdEditCalendar />
+                            </button>
+                          </>
+                        )}
+                        {selectedFilter !== 'requestedByEmployers' &&
+                          selectedFilter !== 'invited' &&
+                          selectedFilter !== 'joined' && (
+                            <Tooltip title="Edit" placement="top">
+                              <IconButton
+                                onClick={() =>
+                                  onOpenUpdateForm(event)
+                                }
+                              >
+                                <Pencil className="text-gray-icon" />
+                                  </IconButton>
+                                </Tooltip>
                           )}
-                      </>
-                    )}
-                  </div>
-
-                  {/* table body end */}
-                </div>
-              </div>
-            </div>
-            <Calendar events={filteredEvents[selectedFilter]} />
-          </div>
+                      </div>
+                    </td>
+                    <td>{truncate(event?.description,20)}</td>
+                    <td>{event?.createrName}</td>
+                    <td>{event?.createrEmail}</td>
+                    <td>{event?.createrRole}</td>
+                    <td>{event?.contactEmail}</td>
+                    <td>{truncate(event?.addressLine1,20)}</td>
+                    <td>{truncate(event?.addressLine2,20)}</td>
+                    <td>{event?.approvedByAdmin ? 'Yes' : 'No'}</td>
+                    <td>{event?.rejectedByAdmin ? 'Yes' : 'No'}</td>
+                    <td>{truncate(event?.dressCode,20)}</td>
+                    <td>{event?.partnerId}</td>
+                    <td>{event?.requestedProgram}</td>
+                    <td>{event?.zipCode}</td>
+                    <td>{truncate(event?.AVEquipmentNeeds,20)}</td>
+                    <td>{truncate(event?.RSVP,20)}</td>
+                    <td>{truncate(event?.additionalComments,20)}</td>
+                    <td>{truncate(event?.agenda,20)}</td>
+                    <td>{truncate(event?.carouselImages.join(', '),20)}</td>
+                    <td>{truncate(event?.cateringPreferences,20)}</td>
+                    <td>{event?.emergencyContactPhone}</td>
+                    <td>{truncate(event?.noteFromInstitution,20)}</td>
+                    <td>{truncate(event?.parkingArrangements,20)}</td>
+                    <td>{truncate(event?.preferredLocationInSchool,20)}</td>
+                    <td>{truncate(event?.purpose,20)}</td>
+                    <td>{event?.expectedAttendees}</td>
+                    <td>{truncate(event?.setupRequirements,20)}</td>
+                    <td>{truncate(event?.transportationDetails,20)}</td>
+                    <td>{truncate(event?.url,20)}</td>
+                    <td>{event?.state}</td>
+                    <td>{event?.isTest}</td>
+                    <td>{event?.city}</td>
+                    <td>{event?.eventDate}</td>
+                    <td>
+                      {typeof event?.requestedPartner === 'object' && event?.requestedPartner?.name
+                        ? String(event.requestedPartner.name)
+                        : String(event?.requestedPartner)}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+          
         </div>
+        <Calendar events={filteredEvents[selectedFilter]} />
       </div>
     </DefaultLayout>
   );
